@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://static.skyrock.fm/static/9bGi7ICS6HK1VcLVfLl4Rg.Pe3MgMGYlIuO1snNRhDNFw.abf640g640.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>SkyRDS - By Heavy</title>
+    <style>
+        body {
+            background: black;
+            color: white;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            cursor: none;
+            text-transform: uppercase;
+        }
+        #logo {
+            width: 300px;
+            margin: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        #marquee {
+            position: fixed;
+            top: 80px;
+            width: 100%;
+            font-size: 36px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        #marquee div {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 12s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translate(0); }
+            100% { transform: translate(-100%); }
+        }
+        #info-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        #countdown {
+            font-size: 24px;
+            color: yellow;
+            margin-top: 10px;
+            transition: color 0.5s ease;
+        }
+        #time-date {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 16px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div id="marquee">
+        <div id="marquee-text">Loading...</div>
+    </div>
+    <img id="logo" src="" alt="Skyrock">
+    <div id="info-container">
+        <div id="countdown">Temps restant : 00:00</div>
+    </div>
+    <div id="time-date">
+        <div id="current-time"></div>
+        <div id="current-date"></div>
+    </div>
+    <script>
+        let countdownInterval, previousSong = '', isPlaying = false, isPubMode = false, endTrackTimeout = null, endTime = null;
+        const PUB_OR_SPEAK_TEXT = "PUB OU SPEAK", PUB_OR_SPEAK_IMAGE = "https://i.ibb.co/x78wy7s/logo600.jpg";
+
+        async function fetchCurrentSong() {
+            const res = await fetch('https://skyrock.fm/api/v3/player/onair/natio'); //You can change "natio" by "idf" if you want
+            const data = await res.json();
+            if (data?.schedule?.length) {
+                const delayedNow = new Date(new Date().getTime() - 20000);
+                const lastSong = data.schedule.find(song => new Date(song.info.end) > delayedNow);
+                if (lastSong) {
+                    const currentArtist = lastSong.artists.map(artist => artist.name).join(", ");
+                    const currentTitle = lastSong.info.title;
+                    endTime = new Date(lastSong.info.end);
+                    const coverBigUrl = lastSong.info.cover_big_uri;
+                    document.getElementById('marquee-text').innerText = `${currentArtist} - ${currentTitle}`;
+                    document.getElementById('logo').src = coverBigUrl;
+                    isPubMode = false;
+                    if (!isPlaying) startCountdown(endTime);
+                } else switchToPubOrSpeakMode();
+            } else switchToPubOrSpeakMode();
+        }
+
+        function switchToPubOrSpeakMode() {
+            document.getElementById('marquee-text').innerText = PUB_OR_SPEAK_TEXT;
+            document.getElementById('logo').src = PUB_OR_SPEAK_IMAGE;
+            clearInterval(countdownInterval);
+            document.getElementById('countdown').innerText = '';
+            isPlaying = false;
+        }
+
+        function startCountdown(endTime) {
+            clearInterval(countdownInterval);
+            countdownInterval = setInterval(() => {
+                const remainingTime = endTime - new Date(new Date().getTime() - 20000);
+                const countdownElement = document.getElementById('countdown');
+                if (remainingTime <= 0) {
+                    clearInterval(countdownInterval);
+                    countdownElement.innerText = "END OF TRACK";
+                    countdownElement.style.color = 'white';
+                    setTimeout(fetchCurrentSong, 5000);
+                } else {
+                    const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+                    countdownElement.innerText = `Temps restant : ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    countdownElement.style.color = 'yellow';
+                }
+            }, 1000);
+        }
+
+        function updateTimeAndDate() {
+            const now = new Date();
+            document.getElementById('current-time').innerText = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+            document.getElementById('current-date').innerText = now.toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        setInterval(fetchCurrentSong, 1000); 
+        setInterval(updateTimeAndDate, 1000);
+        updateTimeAndDate();
+    </script>
+</body>
+</html>
