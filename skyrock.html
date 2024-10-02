@@ -81,12 +81,23 @@
         <div id="current-time"></div>
         <div id="current-date"></div>
     </div>
+
     <script>
-        let countdownInterval, previousSong = '', isPlaying = false, isPubMode = false, endTrackTimeout = null, endTime = null;
-        const PUB_OR_SPEAK_TEXT = "PUB OU SPEAK", PUB_OR_SPEAK_IMAGE = "https://i.ibb.co/x78wy7s/logo600.jpg";
+        // Config
+        const CONFIG = {
+            apiUrl: 'https://skyrock.fm/api/v3/player/onair/natio', // Choisissez entre 'natio' et 'parisidf' après le /onair/
+            pubOrSpeakText: 'PUB OU SPEAK',
+            pubOrSpeakImage: 'https://i.ibb.co/x78wy7s/logo600.jpg', // URL de l'image par défaut pour les pubs ou les speaks
+            countdownColor: 'yellow', // Couleur du compte à rebours
+            endTrackMessage: 'END OF TRACK', // Message affiché à la fin de la piste
+            updateIntervalMs: 1000, // Intervalle de mise à jour en millisecondes (1 seconde)
+            apiRefreshIntervalMs: 5000 // Intervalle de rafraîchissement de l'API en millisecondes
+        };
+
+        let countdownInterval, isPlaying = false, isPubMode = false, endTime = null;
 
         async function fetchCurrentSong() {
-            const res = await fetch('https://skyrock.fm/api/v3/player/onair/natio'); //You can change "natio" by "idf" if you want
+            const res = await fetch(CONFIG.apiUrl);
             const data = await res.json();
             if (data?.schedule?.length) {
                 const delayedNow = new Date(new Date().getTime() - 20000);
@@ -105,8 +116,8 @@
         }
 
         function switchToPubOrSpeakMode() {
-            document.getElementById('marquee-text').innerText = PUB_OR_SPEAK_TEXT;
-            document.getElementById('logo').src = PUB_OR_SPEAK_IMAGE;
+            document.getElementById('marquee-text').innerText = CONFIG.pubOrSpeakText;
+            document.getElementById('logo').src = CONFIG.pubOrSpeakImage;
             clearInterval(countdownInterval);
             document.getElementById('countdown').innerText = '';
             isPlaying = false;
@@ -119,14 +130,14 @@
                 const countdownElement = document.getElementById('countdown');
                 if (remainingTime <= 0) {
                     clearInterval(countdownInterval);
-                    countdownElement.innerText = "END OF TRACK";
+                    countdownElement.innerText = CONFIG.endTrackMessage;
                     countdownElement.style.color = 'white';
-                    setTimeout(fetchCurrentSong, 5000);
+                    setTimeout(fetchCurrentSong, CONFIG.apiRefreshIntervalMs);
                 } else {
                     const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
                     countdownElement.innerText = `Temps restant : ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                    countdownElement.style.color = 'yellow';
+                    countdownElement.style.color = CONFIG.countdownColor;
                 }
             }, 1000);
         }
@@ -137,7 +148,7 @@
             document.getElementById('current-date').innerText = now.toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
         }
 
-        setInterval(fetchCurrentSong, 1000); 
+        setInterval(fetchCurrentSong, CONFIG.updateIntervalMs); 
         setInterval(updateTimeAndDate, 1000);
         updateTimeAndDate();
     </script>
