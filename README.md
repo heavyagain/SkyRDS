@@ -38,6 +38,8 @@ Everything is shifted by 20s to be synchronized with the Skyrock audio stream
 ## Customization
 
 - **Logo and Background**: The Skyrock logo and background color can be customized via the `#logo` and `body` sections of the CSS.
+
+- **Config** : 
     apiUrl : Choose between 'natio' or 'parisidf' after /onair/
     pubOrSpeakText : The text that there mark, when a commercials or a speak is detect
     pubOrSpeakImage : Default image URL for commercials or speaks
