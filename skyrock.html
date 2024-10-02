@@ -85,14 +85,15 @@
     <script>
         // Config
         const CONFIG = {
-            apiUrl: 'https://skyrock.fm/api/v3/player/onair/natio', // Choisissez entre 'natio' et 'parisidf' après le /onair/
-            pubOrSpeakText: 'PUB OU SPEAK',
-            pubOrSpeakImage: 'https://i.ibb.co/x78wy7s/logo600.jpg', // URL de l'image par défaut pour les pubs ou les speaks
-            countdownColor: 'yellow', // Couleur du compte à rebours
-            endTrackMessage: 'END OF TRACK', // Message affiché à la fin de la piste
-            updateIntervalMs: 1000, // Intervalle de mise à jour en millisecondes (1 seconde)
-            apiRefreshIntervalMs: 5000 // Intervalle de rafraîchissement de l'API en millisecondes
-        };
+    apiUrl: 'https://skyrock.fm/api/v3/player/onair/natio', // Choose between 'natio' or 'parisidf' after /onair/
+    pubOrSpeakText: 'PUB OR SPEAK',
+    pubOrSpeakImage: 'https://i.ibb.co/x78wy7s/logo600.jpg', // Default image URL for commercials or speaks
+    countdownColor: 'yellow', // Countdown text color
+    endTrackMessage: 'END OF TRACK', // Message displayed at the end of the track
+    updateIntervalMs: 1000, // Update interval in milliseconds (1 second)
+    apiRefreshIntervalMs: 5000 // API refresh interval in milliseconds
+};
+
 
         let countdownInterval, isPlaying = false, isPubMode = false, endTime = null;
 

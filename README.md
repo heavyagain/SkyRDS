@@ -10,7 +10,7 @@ Everything is shifted by 20s to be synchronized with the Skyrock audio stream
 ## Features
 
 - **Real-time Song Display**: Shows the currently playing song's artist, title, and cover image from Skyrock's API.
-- **Countdown Timer**: Displays the remaining time for the current song, blinking in red during the last 15 seconds.
+- **Countdown Timer**: Displays the remaining time for the current song, blinking during the last 15 seconds.
 - **Automatic Updates**: The page refreshes every second to check for new songs and update the countdown timer.
 - **Commercial/Break Detection**: Switches to a "PUB OU SPEAK" (Ad or DJ Talk) screen when no song is playing.
 
@@ -38,7 +38,14 @@ Everything is shifted by 20s to be synchronized with the Skyrock audio stream
 ## Customization
 
 - **Logo and Background**: The Skyrock logo and background color can be customized via the `#logo` and `body` sections of the CSS.
-
+    apiUrl : Choose between 'natio' or 'parisidf' after /onair/
+    pubOrSpeakText : The text that there mark, when a commercials or a speak is detect
+    pubOrSpeakImage : Default image URL for commercials or speaks
+    countdownColor : Countdown text color
+    endTrackMessage : Message displayed at the end of the track
+    updateIntervalMs : Update interval in milliseconds (1 second)
+    apiRefreshIntervalMs : API refresh interval in milliseconds
 ## License
 
 This project is licensed under the MIT License.
+
